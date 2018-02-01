@@ -46,8 +46,14 @@ Steps to start working:
  * Go to Project-->Import CCS Projects
      * Click Browse, Ok (Defaults to workspace directory)
 	 * Check box next to all projects, click finish
-
+	 	 
  * Build the karman-application project, or your favorite application project
  
+ * Right click the project in the project explorer
+	 * Debug as --> code composer debug session
+	 * Stop the debug session
+	 * Go back to Debug as ---> Debug Configurations --> Target
+	 * Uncheck Enable Semihosting
  
+ * Happy coding! :)
  
