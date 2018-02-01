@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVersion value="7.2.0"/>
+	<deviceVariant value="MSP432P401R"/>
+	<deviceFamily value="MSP432"/>
+	<deviceEndianness value="little"/>
+	<codegenToolVersion value="GNU_6.3.1:Linaro"/>
+	<isElfFormat value="true"/>
+	<createSlaveProjects value=""/>
+	<ignoreDefaultDeviceSettings value="true"/>
+	<templateProperties value="id=freertos_builds_MSP_EXP432P401R_release_gcc.projectspec.freertos_builds_MSP_EXP432P401R_release_gcc,products=com.ti.SIMPLELINK_MSP432_SDK,buildProfile=release,"/>
+	<origin value="C:\ti\simplelink_msp432p4_sdk_1_60_00_12\kernel\freertos\builds\MSP_EXP432P401R\release\gcc\freertos_builds_MSP_EXP432P401R_release_gcc.projectspec"/>
+	<filesToOpen value=""/>
+</projectOptions>
