@@ -14,4 +14,5 @@
 	<templateProperties value="id=timerled_MSP_EXP432P401R_freertos_gcc.projectspec.timerled_MSP_EXP432P401R_freertos_gcc,buildProfile=release,isHybrid=true,"/>
 	<origin value="c:\ti\simplelink_msp432p4_sdk_1_60_00_12\examples\rtos\MSP_EXP432P401R\drivers\timerled\freertos\gcc\timerled_MSP_EXP432P401R_freertos_gcc.projectspec"/>
 	<filesToOpen value=""/>
+	<isTargetManual value="false"/>
 </projectOptions>

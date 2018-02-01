@@ -49,6 +49,9 @@
 /* Example/Board Header files */
 #include "Board.h"
 
+
+#include "appDefs.h"
+
 extern void *mainThread(void *arg0);
 
 /* Stack size in bytes */
@@ -97,6 +100,8 @@ int main(void)
         /* pthread_create() failed */
         while (1);
     }
+
+    appInit();
 
     /* Start the FreeRTOS scheduler */
     vTaskStartScheduler();
