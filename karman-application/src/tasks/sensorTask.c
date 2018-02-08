@@ -83,6 +83,9 @@ void *sensor_task_func(void *arg0)
 {
     static sensor_status_t curr_status;
 
+    /* Initialize task. Must be done here to allow for sleeps in initialization code */
+    init_sensor_task();
+
     for(;;)
     {
         curr_status = ms5607_02ba03_run();

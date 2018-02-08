@@ -240,9 +240,16 @@ bool ms5607_02ba03_read_data(void)
         case WAIT_D1_CONVERT:
             if(true == gAltimeterControl.send_complete)
             {
-                /* Record time when we started conversion */
-                clock_gettime(CLOCK_REALTIME, &(gAltimeterControl.time_start));
-                gAltimeterControl.get_data_state = WAIT_8ms_D1;
+                if(SPI_TRANSFER_COMPLETED == gAltimeterControl.transaction.status)
+                {
+                    /* Record time when we started conversion */
+                    clock_gettime(CLOCK_REALTIME, &(gAltimeterControl.time_start));
+                    gAltimeterControl.get_data_state = WAIT_8ms_D1;
+                }
+                else
+                {
+                    gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
+                }
             }
             returnStatus = SENSOR_WAITING;
             break;
@@ -263,9 +270,15 @@ bool ms5607_02ba03_read_data(void)
         case WAIT_D1_READ:
             if(true == gAltimeterControl.send_complete)
             {
-                gAltimeterControl.raw_vals.dig_press = get_data_from_buffer24(gAltimeterControl.spi_recv_buffer);
-                gAltimeterControl.get_data_state = ENQUEUE_D2_CONVERT;
-                returnStatus = SENSOR_BUSY;
+                if(SPI_TRANSFER_COMPLETED == gAltimeterControl.transaction.status)
+                {
+                    gAltimeterControl.raw_vals.dig_press = get_data_from_buffer24(gAltimeterControl.spi_recv_buffer);
+                    gAltimeterControl.get_data_state = ENQUEUE_D2_CONVERT;
+                }
+                else
+                {
+                    gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
+                }
             }
             break;
         case ENQUEUE_D2_CONVERT:
@@ -278,9 +291,16 @@ bool ms5607_02ba03_read_data(void)
         case WAIT_D2_CONVERT:
             if(true == gAltimeterControl.send_complete)
             {
-                /* Record time when we started conversion */
-                clock_gettime(CLOCK_REALTIME, &(gAltimeterControl.time_start));
-                gAltimeterControl.get_data_state = WAIT_8ms_D2;
+                if(SPI_TRANSFER_COMPLETED == gAltimeterControl.transaction.status)
+                {
+                    /* Record time when we started conversion */
+                    clock_gettime(CLOCK_REALTIME, &(gAltimeterControl.time_start));
+                    gAltimeterControl.get_data_state = WAIT_8ms_D2;
+                }
+                else
+                {
+                    gAltimeterControl.get_data_state = ENQUEUE_D2_CONVERT;
+                }
             }
             break;
         case WAIT_8ms_D2:
@@ -300,12 +320,19 @@ bool ms5607_02ba03_read_data(void)
         case WAIT_D2_READ:
             if(true == gAltimeterControl.send_complete)
             {
-                gAltimeterControl.raw_vals.dig_temp = get_data_from_buffer24(gAltimeterControl.spi_recv_buffer);
-                /* Do math */
-                ms5607_02ba03_calculate_temp();
-                ms5607_02ba03_calculate_press();
-                gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
-                returnStatus = SENSOR_COMPLETE;
+                if(SPI_TRANSFER_COMPLETED == gAltimeterControl.transaction.status)
+                {
+                    gAltimeterControl.raw_vals.dig_temp = get_data_from_buffer24(gAltimeterControl.spi_recv_buffer);
+                    /* Do math */
+                    ms5607_02ba03_calculate_temp();
+                    ms5607_02ba03_calculate_press();
+                    gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
+                    returnStatus = SENSOR_COMPLETE;
+                }
+                else
+                {
+                    gAltimeterControl.get_data_state = ENQUEUE_D2_CONVERT;
+                }
             }
             break;
     }

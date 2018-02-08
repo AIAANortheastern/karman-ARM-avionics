@@ -123,9 +123,6 @@ void appInit(void)
         /* Failed to start timer */
         while (1);
     }
-
-    /* Initialize tasks */
-    init_sensor_task();
 }
 
 /*
