@@ -60,6 +60,8 @@
 #include "Board.h"
 
 #include "appDefs.h"
+#include "sensorDefs.h"
+#include "sensorTask.h"
 
 void appInit(void)
 {
@@ -72,9 +74,10 @@ void appInit(void)
     GPIO_init();
     Timer_init();
     Display_init();
+    SPI_init();
 
+    /* Create Display and display mutex */
     gTheDisplay = Display_open(Display_Type_UART, NULL);
-
     if(!gTheDisplay)
     {
         while(1);
@@ -88,10 +91,14 @@ void appInit(void)
         while(1);
     }
 
-
+    /** PIN CONFIGURATION **/
 
     /* Configure the LED pin */
     GPIO_setConfig(Board_GPIO_LED0, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_LOW);
+
+    /* Configure the Altimeter CS Pin*/
+    GPIO_setConfig(ALTIMETER_CS, GPIO_CFG_OUT_STD | GPIO_CFG_OUT_STR_LOW);
+    GPIO_write(ALTIMETER_CS, CHIP_SELECT_HIGH);
 
     /* Turn off user LED */
     GPIO_write(Board_GPIO_LED0, Board_GPIO_LED_OFF);
@@ -117,7 +124,8 @@ void appInit(void)
         while (1);
     }
 
-
+    /* Initialize tasks */
+    init_sensor_task();
 }
 
 /*

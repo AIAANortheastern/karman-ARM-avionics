@@ -13,5 +13,3 @@
 Display_Handle gTheDisplay;
 pthread_mutex_t gDisplayMuxtex;
 
-
-

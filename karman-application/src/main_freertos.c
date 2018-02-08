@@ -49,20 +49,21 @@
 /* Example/Board Header files */
 #include "Board.h"
 
-
 #include "appDefs.h"
+#include "sensorTask.h"
 
 extern void *mainThread(void *arg0);
 
 /* Stack size in bytes */
 #define THREADSTACKSIZE   1024
+pthread_t           MainThreadHandle;
+pthread_t           SensorTaskHandle;
 
 /*
  *  ======== main ========
  */
 int main(void)
 {
-    pthread_t           thread;
     pthread_attr_t      attrs;
     struct sched_param  priParam;
     int                 retc;
@@ -75,10 +76,11 @@ int main(void)
 
     /* Call driver init functions */
     Board_initGeneral();
+    /* Call Application init functions */
+    appInit();
 
     /* Set priority and stack size attributes */
     pthread_attr_init(&attrs);
-    priParam.sched_priority = 1;
 
     detachState = PTHREAD_CREATE_DETACHED;
     retc = pthread_attr_setdetachstate(&attrs, detachState);
@@ -87,21 +89,36 @@ int main(void)
         while (1);
     }
 
-    pthread_attr_setschedparam(&attrs, &priParam);
-
     retc |= pthread_attr_setstacksize(&attrs, THREADSTACKSIZE);
     if (retc != 0) {
         /* pthread_attr_setstacksize() failed */
         while (1);
     }
 
-    retc = pthread_create(&thread, &attrs, mainThread, NULL);
+    /** CREATE MAIN THREAD **/
+
+    /* MainThread has priority 2 (1 = LOW, MAX = 10) */
+    priParam.sched_priority = 2;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&MainThreadHandle, &attrs, mainThread, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
     }
 
-    appInit();
+    /** CREATE SENSOR TASK **/
+
+    /* sensor task has priority 1 (1 = LOW, MAX = 10) */
+    /* sensor task will always run in the background when no other tasks need to run */
+    priParam.sched_priority = 1;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&SensorTaskHandle, &attrs, sensor_task_func, NULL);
+    if (retc != 0) {
+        /* pthread_create() failed */
+        while (1);
+    }
 
     /* Start the FreeRTOS scheduler */
     vTaskStartScheduler();
