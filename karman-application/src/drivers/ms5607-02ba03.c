@@ -42,7 +42,7 @@
 
 #define EIGHT_MS (8)
 /** File scope variable with control data for the altimeter */
-static ms5607_02ba03_control_t gAltimeterControl;
+ms5607_02ba03_control_t gAltimeterControl;
 
 /**
 * @brief Initialize the Altimeter.

@@ -31,10 +31,12 @@ void *mainThread(void *arg0)
     {
         clock_gettime(CLOCK_REALTIME, &currtime);
 
-        pthread_mutex_lock(&gDisplayMuxtex);
-        Display_printf(gTheDisplay, 0, 0, "Hello World! Time: %d.%d seconds\n", currtime.tv_sec, currtime.tv_nsec);
-        pthread_mutex_unlock(&gDisplayMuxtex);
-
+        if(currtime.tv_nsec == 0)
+        {
+            pthread_mutex_lock(&gDisplayMuxtex);
+            Display_printf(gTheDisplay, 0, 0, "Hello World! Time: %d.%d seconds\n", currtime.tv_sec, currtime.tv_nsec);
+            pthread_mutex_unlock(&gDisplayMuxtex);
+        }
         vTaskDelayUntil( &xLastWaketime, xFrequency );
     }
 

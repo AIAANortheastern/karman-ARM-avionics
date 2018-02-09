@@ -15,16 +15,23 @@
 
 #include "sensorDefs.h"
 #include "Board.h"
+#include "debug_printf.h"
 
 #include <ti/drivers/SPI.h>
 #include <pthread.h>
 #include <errno.h>
+
+#include <FreeRTOS.h>
+#include <task.h>
 
 /** Contains all current sensor values for use in ... TBD. Processing. */
 sensor_data_t gCurrSensorValues;
 
 SPI_Handle sensorSPIHandle;
 pthread_mutex_t sensorSPIMutex;
+
+
+static volatile uint32_t current_CS;
 
 /* lets sensors know when their transaction has completed asyncronously */
 static void sensorSPICallbackFunction (SPI_Handle handle,
@@ -52,6 +59,8 @@ void init_sensor_task(void)
     {
         while(1); // Sensor SPI Handle failed
     }
+
+    debug_printf("Sensor SPI Opened");
 
     /* no pthread_mutexattr_t needed because we don't need a recursive mutex on the display */
     ret = pthread_mutex_init(&sensorSPIMutex, NULL);
@@ -86,14 +95,22 @@ void *sensor_task_func(void *arg0)
     /* Initialize task. Must be done here to allow for sleeps in initialization code */
     init_sensor_task();
 
+    debug_printf("Sensor task initalized");
+
     for(;;)
     {
+        TickType_t xLastWaketime = xTaskGetTickCount();
+        TickType_t xFrequency = portTICK_PERIOD_MS * 100;
+
         curr_status = ms5607_02ba03_run();
 
         if (curr_status == SENSOR_COMPLETE)
         {
             /* Do fancy things with current temp/pressure data */
             ms5607_02ba03_get_data(&(gCurrSensorValues.altimeter));
+
+            debug_printf("Pressure %d", gCurrSensorValues.altimeter.pressure);
+            debug_printf("Temp: %d", gCurrSensorValues.altimeter.temp);
         }
 #if 0
         /* make this fit the new template scheme */
@@ -121,6 +138,8 @@ void *sensor_task_func(void *arg0)
          * }
          *
          */
+
+        vTaskDelayUntil( &xLastWaketime, xFrequency );
     } /* infinite loop */
 
     return NULL;
@@ -139,10 +158,12 @@ bool sensor_spi_transfer(SPI_Transaction *transaction, uint32_t cs_pin)
 
     if(!mutexRet)
     {
-        GPIO_write(cs_pin, CHIP_SELECT_LOW);
+        current_CS = cs_pin;
+
+        GPIO_write(current_CS, CHIP_SELECT_LOW);
 
         ret = (int32_t)SPI_transfer(sensorSPIHandle, transaction);
-        GPIO_write(cs_pin, CHIP_SELECT_HIGH);
+
 
         pthread_mutex_unlock(&sensorSPIMutex);
     }
@@ -156,5 +177,7 @@ static void sensorSPICallbackFunction (SPI_Handle handle,
     /* let sensor know its transaction finished/was stopped */
     if(transaction->arg)
         *(bool *)transaction->arg = true;
+
+    GPIO_write(current_CS, CHIP_SELECT_HIGH);
 }
 
