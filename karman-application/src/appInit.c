@@ -62,6 +62,7 @@
 #include "appDefs.h"
 #include "sensorDefs.h"
 #include "sensorTask.h"
+#include "IMUTask.h"
 
 void appInit(void)
 {
@@ -75,6 +76,7 @@ void appInit(void)
     Timer_init();
     Display_init();
     SPI_init();
+    I2C_init();
 
     /* Create Display and display mutex */
     gTheDisplay = Display_open(Display_Type_UART, NULL);

@@ -11,6 +11,14 @@
 #include <stdarg.h>
 #include <ti/display/Display.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void debug_printf(char* fmt, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INC_COMMON_DEBUG_PRINTF_H_ */

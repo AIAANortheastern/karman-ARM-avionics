@@ -51,6 +51,7 @@
 
 #include "appDefs.h"
 #include "sensorTask.h"
+#include "IMUTask.h"
 
 extern void *mainThread(void *arg0);
 
@@ -58,6 +59,7 @@ extern void *mainThread(void *arg0);
 #define THREADSTACKSIZE   1024
 pthread_t           MainThreadHandle;
 pthread_t           SensorTaskHandle;
+pthread_t           IMUTaskHandle;
 
 /*
  *  ======== main ========
@@ -115,6 +117,19 @@ int main(void)
     pthread_attr_setschedparam(&attrs, &priParam);
 
     retc = pthread_create(&SensorTaskHandle, &attrs, sensor_task_func, NULL);
+    if (retc != 0) {
+        /* pthread_create() failed */
+        while (1);
+    }
+
+    /** CREATE IMU TASK **/
+
+    /* IMU task has priority 1 (1 = LOW, MAX = 10) */
+    /* IMU task will always run in the background when no other tasks need to run */
+    priParam.sched_priority = 1;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&IMUTaskHandle, &attrs, IMUTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);

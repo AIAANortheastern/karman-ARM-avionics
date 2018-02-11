@@ -24,6 +24,7 @@
 
 /* chip select defines */
 #define ALTIMETER_CS Board_SPI_CS1
+#define IMU_I2C Board_I2C0
 
 #define CHIP_SELECT_LOW (0)
 #define CHIP_SELECT_HIGH (1)
