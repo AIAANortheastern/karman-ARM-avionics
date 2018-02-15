@@ -637,12 +637,14 @@ bool Adafruit_BNO055::isFullyCalibrated(void)
 bool Adafruit_BNO055::write8(adafruit_bno055_reg_t reg, uint8_t value)
 {
   I2C_Transaction trans;
-  uint8_t buf;
+  uint8_t buf[2];
+  buf[0] = reg;
+  buf[1] = value;
 
   trans.slaveAddress = _address;
   trans.writeBuf = (void *)&buf;
   trans.readBuf = NULL;
-  trans.writeCount = 1;
+  trans.writeCount = 2;
   trans.readCount = 0;
   trans.arg = NULL;
 
@@ -658,11 +660,12 @@ uint8_t Adafruit_BNO055::read8(adafruit_bno055_reg_t reg )
 {
   I2C_Transaction trans;
   uint8_t value = 0;
+  adafruit_bno055_reg_t theReg = reg;
 
   trans.slaveAddress = _address;
-  trans.writeBuf = NULL;
+  trans.writeBuf = (void *)&theReg;
   trans.readBuf = (void *)&value;
-  trans.writeCount = 0;
+  trans.writeCount = 1;
   trans.readCount = 1;
   trans.arg = NULL;
 
