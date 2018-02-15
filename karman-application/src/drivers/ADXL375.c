@@ -28,7 +28,7 @@
 #define  HIGH_G_ACCELEROMETER_DATA_RATE_100HZ   (0x0A)
 #define  HIGH_G_ACCELEROMETER_POWER_MODE        (0x08)
 
-/* high g accel reset address */
+/* high g accel read/write values */
 #define  HIGH_G_ACCELEROMETER_READ_BIT          (0x80)		/* Read/Write bit for spi read request */
 #define  HIGH_G_ACCELEROMETER_WRITE_BIT         (0x00)		/* Read/Write bit for spi write request */
 #define  HIGH_G_ACCELEROMETER_MULTI_READ_BIT    (0x40)      /* Multi read bit for spi read request */
@@ -45,8 +45,6 @@
 void ADXL375_init(SPI_Handle *spi_master) {
 	
 	/* assign the spi_master to master struct for high g accelerometer */
-	//gHighGAccelerometer.cs_info.csPort = &HIGHG_ACC1_PORT; //TODO fix these to match new board
-	//gHighGAccelerometer.cs_info.pinBitMask = HIGHG_ACC1_CS;
 	gHighGAccelerometer.spi_master = spi_master;
 	
 	/* reset values to defaults */
@@ -68,7 +66,7 @@ void ADXL375_init(SPI_Handle *spi_master) {
 
 	// TODO zero offsets
 
-	// don't need reset based on other driver
+	// don't need reset based on other driver and datasheet
 	//ADXL375_reset();
 
 }
@@ -179,14 +177,6 @@ bool ADXL375_read_multiple_reg(uint8_t reg, uint8_t readLen) {
 
 }
 
-
-/*******************************************************************************
- *
- * Nothing from this point on has been updated to work with the new board
- * Or work at all in some cases
- *
- **************************************************************************/
-
 /**
  * @brief State machine for High G Accelerometer
  * 
@@ -237,8 +227,10 @@ sensor_status_t ADXL375_get_data() {
  */
 void ADXL375_get_offset_values() {
 	
+    /* read offsets from regs */
     if(ADXL375_read_multiple_reg(HIGH_G_ACCELEROMETER_OFFSET_REG, 3)){
 
+        /* store offsets in global struct */
         gHighGAccelerometer.offset_vals.x = gHighGAccelerometer.spi_recv_buffer[1];
         gHighGAccelerometer.offset_vals.y = gHighGAccelerometer.spi_recv_buffer[2];
         gHighGAccelerometer.offset_vals.z = gHighGAccelerometer.spi_recv_buffer[3];
@@ -250,7 +242,7 @@ void ADXL375_get_offset_values() {
 /** 
  * @brief reset function for High G Accelerometer
  * 
- * sends reset request to accelerometer
+ * sends reset request to accelerometer. I'm not sure if it has one since it autosleeps
  */
 void ADXL375_reset() {
 	
@@ -258,34 +250,7 @@ void ADXL375_reset() {
 
 }
 
-////////////////////////////////
-//HELPERS BELOW HERE
-///////////////////////////////
 
-/** 
- * @brief enqueues read request for High G Accelerometer data
- *
- * enqueues read request for x, y, & z accelerometer data
- *
- * I don't think we need this anymore
- */
-//void enqueue_helper() {
-//	/* clear buffers */
-//	memset((void *)gHighGAccelerometer.spi_recv_buffer, 0, sizeof(gHighGAccelerometer.spi_recv_buffer));
-//	memset((void *)gHighGAccelerometer.spi_send_buffer, 0, sizeof(gHighGAccelerometer.spi_send_buffer));
-//
-//	/* set send buffer with read code which will be some constant defined in header */
-//	gHighGAccelerometer.spi_send_buffer[0] = HIGH_G_ACCELEROMETER_READ_BIT | HIGH_G_ACCELEROMETER_READ_DATA;
-//
-//	/* spimaster enqueue read request */
-//	spi_master_enqueue(gHighGAccelerometer.spi_master,
-//	    &(gHighGAccelerometer.cs_info),
-//	    gHighGAccelerometer.spi_send_buffer,
-//	    1,
-//	    gHighGAccelerometer.spi_recv_buffer,
-//	    7,
-//	    &(gHighGAccelerometer.send_complete));
-//}
 
 /** 
  * @brief moves x,y, & z raw High G Accelerometer data from buffer to control struct
