@@ -10,6 +10,7 @@
 #include "sensorTask.h"
 
 #include "ms5607-02ba03.h"
+#include "ADXL375.h"
 //#include "BMX055Mag.h"
 //#include "BMX005Gyro.h"
 
@@ -73,6 +74,9 @@ void init_sensor_task(void)
     /* run initialization for all sensors */
     /* altimeter/pressure */
     ms5607_02ba03_init(&sensorSPIHandle);
+
+    /* high g accelerometer */
+    ADXL375_init(&sensorSPIHandle);
 #if 0
     /* magnetometer */
     bmx055_mag_init(&sensorSPIHandle);
