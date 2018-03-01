@@ -46,6 +46,8 @@ void init_sensor_task(void)
 {
     int ret = 0;
 
+
+    SPI_init();
     /* Initialize SPI interface*/
     SPI_Params slaveSpiParams;
     SPI_Params_init(&slaveSpiParams);

@@ -23,5 +23,7 @@ void debug_printf(char* fmt, ...)
     gTheDisplay->fxnTablePtr->vprintfFxn(gTheDisplay, 0, 0, fmt, va);
 
     pthread_mutex_unlock(&gDisplayMuxtex);
+
+    va_end(va);
 }
 
