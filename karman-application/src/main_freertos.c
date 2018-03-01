@@ -127,8 +127,8 @@ int main(void)
     /** CREATE IMU TASK **/
 
     /* IMU task has priority 1 (1 = LOW, MAX = 10) */
-    /* IMU task will always run in the background when no other tasks need to run */
-    priParam.sched_priority = 1;
+    /* IMU task will always run higher priority than sensor task */
+    priParam.sched_priority = 2;
     pthread_attr_setschedparam(&attrs, &priParam);
 
     retc = pthread_create(&IMUTaskHandle, &attrs, IMUTask, NULL);

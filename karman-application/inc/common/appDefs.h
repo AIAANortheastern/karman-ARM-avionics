@@ -14,8 +14,14 @@
 #include <time.h>
 #include <stdbool.h>
 
+#include <FreeRTOS.h>
+#include <queue.h>
+
 extern Display_Handle gTheDisplay;
 extern pthread_mutex_t gDisplayMuxtex;
+extern QueueHandle_t gQueueSensorRadio;
+extern QueueHandle_t gQueueIMUSensor;
+extern pthread_barrier_t startThreadBarrier;
 
 void appInit(void);
 

@@ -12,4 +12,5 @@
 
 Display_Handle gTheDisplay;
 pthread_mutex_t gDisplayMuxtex;
-
+QueueHandle_t gQueueSensorRadio;
+pthread_barrier_t startThreadBarrier;

@@ -15,6 +15,7 @@
 #define SENSORDEFS_H_
 
 #include "ms5607-02ba03.h"
+#include "IMUTask.h"
 //#include "BMX055Mag.h"
 //#include "BMX005Gyro.h"
 #include "Board.h"
@@ -33,8 +34,7 @@
 typedef struct
 {
     ms5607_02ba03_data_t altimeter; /**< Temp and pressure */
-    //bmx055_mag_data_t magnetometer; /**< Magnetometer data */
-    //gyro_data_raw_t gyro; /**< Gyro data */
+    imu_data_t imu; /**< Accel, Gyro, Mag, 3d doubles */
     /* TODO add all sensors' data */
 } sensor_data_t;
 

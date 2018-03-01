@@ -12,7 +12,9 @@
 extern "C" {
 #endif
 
-int init_radio(void);
+#include <stdbool.h>
+
+bool init_radio(void);
 
 void *radioTask(void *arg0);
 

@@ -41,6 +41,7 @@
 #define ALTIMETER_NUM_CAL          (6)    /**< There are six calibration values */
 
 #define EIGHT_MS (8)
+#define TWENTY_MS (20)
 /** File scope variable with control data for the altimeter */
 ms5607_02ba03_control_t gAltimeterControl;
 
@@ -216,6 +217,7 @@ bool ms5607_02ba03_read_data(void)
  */
  sensor_status_t ms5607_02ba03_run(void)
  {
+    static bool begin_cycle = false;
     /** 1. Enqueue D1 convert command */
     /** 2. Wait for that to finish */
     /** 3. Wait additional 8.2ms for conversion */
@@ -232,9 +234,15 @@ bool ms5607_02ba03_read_data(void)
     switch(gAltimeterControl.get_data_state)
     {
         case ENQUEUE_D1_CONVERT:
+            if(!begin_cycle)
+            {
+                clock_gettime(CLOCK_REALTIME, &(gAltimeterControl.major_cycle));
+                begin_cycle = true;
+            }
             if(ms5607_02ba03_d1_convert())
             {
                 gAltimeterControl.get_data_state = WAIT_D1_CONVERT;
+
             }
             break;
         case WAIT_D1_CONVERT:
@@ -326,13 +334,22 @@ bool ms5607_02ba03_read_data(void)
                     /* Do math */
                     ms5607_02ba03_calculate_temp();
                     ms5607_02ba03_calculate_press();
-                    gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
+                    gAltimeterControl.get_data_state = WAIT_END_OF_CYCLE;
                     returnStatus = SENSOR_COMPLETE;
                 }
                 else
                 {
                     gAltimeterControl.get_data_state = ENQUEUE_D2_CONVERT;
                 }
+            }
+            break;
+        case WAIT_END_OF_CYCLE:
+            clock_gettime(CLOCK_REALTIME, &curr_time);
+
+            if(timespec_compare(&(gAltimeterControl.major_cycle), &curr_time, TWENTY_MS))
+            {
+                begin_cycle = false;
+                gAltimeterControl.get_data_state = ENQUEUE_D1_CONVERT;
             }
             break;
     }

@@ -15,6 +15,15 @@ extern "C" {
 void *IMUTask(void *arg0);
 bool init_imu_task(void);
 
+typedef struct imu_data_s
+{
+    double Accel[3];
+    double Gyro[3];
+    double Mag[3];
+} imu_data_t;
+
+
+
 #ifdef __cplusplus
 }
 #endif

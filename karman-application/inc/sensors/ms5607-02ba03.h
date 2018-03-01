@@ -55,7 +55,8 @@ typedef enum
     ENQUEUE_D2_CONVERT, /**< Take Temperature Measurement */
     WAIT_D2_CONVERT,    /**< Wait for SPI transaction to complete */
     WAIT_8ms_D2,        /**< Wait for measurement to complete */
-    WAIT_D2_READ        /**< Read Temp ADC value and convert both measurements */
+    WAIT_D2_READ,       /**< Read Temp ADC value and convert both measurements */
+    WAIT_END_OF_CYCLE   /**< Wait until end of 50Hz cycle */
 } ms5607_02ba03_state_t;
 
 /** Control structure for Altimeter */
@@ -71,6 +72,7 @@ typedef struct altimeter_control_s
     ms5607_02ba03_data_t final_vals;      /**< Usable values */
     ms5607_02ba03_state_t get_data_state; /**< state machine */
     struct timespec       time_start;       /**< For keeping track of time */
+    struct timespec       major_cycle;      /**< Keeping track of get data major cycle*/
 } ms5607_02ba03_control_t;
 
 

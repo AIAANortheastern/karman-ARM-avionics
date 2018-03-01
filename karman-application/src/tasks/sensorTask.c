@@ -7,12 +7,15 @@
  *  Author: Andrew Kaster
  */
 
+#include <FreeRTOS.h>
+#include <task.h>
+#include <queue.h>
+
 #include "sensorTask.h"
 
 #include "ms5607-02ba03.h"
-//#include "BMX055Mag.h"
-//#include "BMX005Gyro.h"
 
+#include "appDefs.h"
 #include "sensorDefs.h"
 #include "Board.h"
 #include "debug_printf.h"
@@ -20,16 +23,15 @@
 #include <ti/drivers/SPI.h>
 #include <pthread.h>
 #include <errno.h>
+#include <time.h>
 
-#include <FreeRTOS.h>
-#include <task.h>
+#define QUEUE_DEPTH 16
 
 /** Contains all current sensor values for use in ... TBD. Processing. */
 sensor_data_t gCurrSensorValues;
 
 SPI_Handle sensorSPIHandle;
 pthread_mutex_t sensorSPIMutex;
-
 
 static volatile uint32_t current_CS;
 
@@ -45,7 +47,6 @@ static void sensorSPICallbackFunction (SPI_Handle handle,
 void init_sensor_task(void)
 {
     int ret = 0;
-
 
     SPI_init();
     /* Initialize SPI interface*/
@@ -72,6 +73,14 @@ void init_sensor_task(void)
         while(1);
     }
 
+    gQueueSensorRadio = xQueueCreate(QUEUE_DEPTH, sizeof(sensor_data_t));
+
+    if(gQueueSensorRadio == NULL)
+    {
+        /* Sensor queue unable to be created! */
+        while(1);
+    }
+
     /* run initialization for all sensors */
     /* altimeter/pressure */
     ms5607_02ba03_init(&sensorSPIHandle);
@@ -93,19 +102,26 @@ void init_sensor_task(void)
 void *sensor_task_func(void *arg0)
 {
     static sensor_status_t curr_status;
+    struct timespec begin_time;
+    static uint32_t cycleCount = 0;
 
     /* Initialize task. Must be done here to allow for sleeps in initialization code */
     init_sensor_task();
 
-    debug_printf("Sensor task initalized");
+    clock_gettime(CLOCK_REALTIME, &begin_time);
+    debug_printf("Sensor task initalized at time %d s %l ns", begin_time.tv_sec, begin_time.tv_nsec);
+
+    pthread_barrier_wait(&startThreadBarrier);
 
     for(;;)
     {
         TickType_t xLastWaketime = xTaskGetTickCount();
-        TickType_t xFrequency = portTICK_PERIOD_MS * 100;
+        TickType_t xFrequency = portTICK_PERIOD_MS * 1;
+
 
         curr_status = ms5607_02ba03_run();
 
+        /** Data acquision rate: 50Hz (20ms) **/
         if (curr_status == SENSOR_COMPLETE)
         {
             /* Do fancy things with current temp/pressure data */
@@ -141,6 +157,21 @@ void *sensor_task_func(void *arg0)
          *
          */
 
+
+        cycleCount++;
+
+        // send data to radio @ 50Hz
+        // Copy data from IMU @ 50Hz
+        if(cycleCount >= 20)
+        {
+            cycleCount = 0;
+            // Copy IMU data into sensor values struct
+            xQueueReceive(gQueueIMUSensor, (void *) &(gCurrSensorValues.imu), (TickType_t) 0);
+            // Send All sensor values to radio
+            xQueueSend(gQueueSensorRadio, (void *) &gCurrSensorValues, (TickType_t) 0);
+        }
+
+        // sleep until the next millisecond
         vTaskDelayUntil( &xLastWaketime, xFrequency );
     } /* infinite loop */
 
