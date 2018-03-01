@@ -52,6 +52,7 @@
 #include "appDefs.h"
 #include "sensorTask.h"
 #include "IMUTask.h"
+#include "radioTask.h"
 
 extern void *mainThread(void *arg0);
 
@@ -60,6 +61,7 @@ extern void *mainThread(void *arg0);
 pthread_t           MainThreadHandle;
 pthread_t           SensorTaskHandle;
 pthread_t           IMUTaskHandle;
+pthread_t           RadioTaskHandle;
 
 /*
  *  ======== main ========
@@ -130,6 +132,19 @@ int main(void)
     pthread_attr_setschedparam(&attrs, &priParam);
 
     retc = pthread_create(&IMUTaskHandle, &attrs, IMUTask, NULL);
+    if (retc != 0) {
+        /* pthread_create() failed */
+        while (1);
+    }
+
+    /** CREATE RADIO TASK **/
+
+    /* Radio task has priority 1 (1 = LOW, MAX = 10) */
+    /* Radio task will always run in the background when no other tasks need to run */
+    priParam.sched_priority = 1;
+    pthread_attr_setschedparam(&attrs, &priParam);
+
+    retc = pthread_create(&RadioTaskHandle, &attrs, radioTask, NULL);
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
