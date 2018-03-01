@@ -102,14 +102,15 @@ void init_sensor_task(void)
 void *sensor_task_func(void *arg0)
 {
     static sensor_status_t curr_status;
-    struct timespec begin_time;
-    static uint32_t cycleCount = 0;
+    struct timespec curr_time;
+    static struct timespec time_20ms;
 
     /* Initialize task. Must be done here to allow for sleeps in initialization code */
     init_sensor_task();
 
-    clock_gettime(CLOCK_REALTIME, &begin_time);
-    debug_printf("Sensor task initalized at time %d s %l ns", begin_time.tv_sec, begin_time.tv_nsec);
+    clock_gettime(CLOCK_REALTIME, &curr_time);
+    clock_gettime(CLOCK_REALTIME, &time_20ms);
+    debug_printf("Sensor task initialized at time %d s %l ns", curr_time.tv_sec, curr_time.tv_nsec);
 
     pthread_barrier_wait(&startThreadBarrier);
 
@@ -117,7 +118,7 @@ void *sensor_task_func(void *arg0)
     {
         TickType_t xLastWaketime = xTaskGetTickCount();
         TickType_t xFrequency = portTICK_PERIOD_MS * 1;
-
+        clock_gettime(CLOCK_REALTIME, &curr_time);
 
         curr_status = ms5607_02ba03_run();
 
@@ -130,23 +131,7 @@ void *sensor_task_func(void *arg0)
             debug_printf("Pressure %d", gCurrSensorValues.altimeter.pressure);
             debug_printf("Temp: %d", gCurrSensorValues.altimeter.temp);
         }
-#if 0
-        /* make this fit the new template scheme */
-        curr_status = bmx055_mag_run();
 
-        if(curr_status == SENSOR_COMPLETE)
-        {
-            /* do stuff with mag data */
-            bmx055_mag_get_data(&(gCurrSensorValues.magnetometer));
-        }
-
-        curr_status = gyro_state_machine();
-
-        if(curr_status == SENSOR_COMPLETE)
-        {
-            gyro_get_data(&(gCurrSensorValues.gyro));
-        }
-#endif
         /* ----TEMPLATE----
          * curr_status = <foo>_run();
          * if (curr_status == SENSOR_COMPLETE)
@@ -157,18 +142,16 @@ void *sensor_task_func(void *arg0)
          *
          */
 
-
-        cycleCount++;
-
         // send data to radio @ 50Hz
         // Copy data from IMU @ 50Hz
-        if(cycleCount >= 20)
+        if(timespec_compare(&time_20ms, &curr_time, 20))
         {
-            cycleCount = 0;
             // Copy IMU data into sensor values struct
             xQueueReceive(gQueueIMUSensor, (void *) &(gCurrSensorValues.imu), (TickType_t) 0);
             // Send All sensor values to radio
             xQueueSend(gQueueSensorRadio, (void *) &gCurrSensorValues, (TickType_t) 0);
+
+            clock_gettime(CLOCK_REALTIME, &time_20ms);
         }
 
         // sleep until the next millisecond
