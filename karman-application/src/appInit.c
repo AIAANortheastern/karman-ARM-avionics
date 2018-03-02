@@ -126,15 +126,6 @@ void appInit(void)
         while (1);
     }
 
-    // NOTE TODO Increment this number at the end to add more to barrier
-    ret = pthread_barrier_init(&startThreadBarrier, NULL, 3);
-
-    if(ret)
-    {
-        /* pthread_barrier_init failed */
-        while(1);
-    }
-
 }
 
 /*

@@ -128,7 +128,7 @@ int main(void)
 
     /* IMU task has priority 1 (1 = LOW, MAX = 10) */
     /* IMU task will always run higher priority than sensor task */
-    priParam.sched_priority = 2;
+    priParam.sched_priority = 1;
     pthread_attr_setschedparam(&attrs, &priParam);
 
     retc = pthread_create(&IMUTaskHandle, &attrs, IMUTask, NULL);
@@ -148,6 +148,15 @@ int main(void)
     if (retc != 0) {
         /* pthread_create() failed */
         while (1);
+    }
+
+    // NOTE TODO Increment this number at the end to add more to barrier
+    retc = pthread_barrier_init(&startThreadBarrier, NULL, 3);
+
+    if(retc)
+    {
+        /* pthread_barrier_init failed */
+        while(1);
     }
 
     /* Start the FreeRTOS scheduler */

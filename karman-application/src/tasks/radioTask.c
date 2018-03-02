@@ -48,6 +48,10 @@ bool init_radio(void)
         ret = false;
     }
 
+    // TODO REMOVE THIS FOR REAL HARDWARE
+    char test[] = "Hello from radio uart\r\n";
+    UART_write(RadioUart, test, sizeof(test));
+
     return ret;
 }
 
@@ -58,7 +62,7 @@ void *radioTask(void *arg0)
 
     pthread_barrier_wait(&startThreadBarrier);
 
-    configASSERT(RADIO_BUFFSIZE < sizeof(sensor_data_t));
+    configASSERT(RADIO_BUFFSIZE > sizeof(sensor_data_t));
 
     for(;;)
     {
