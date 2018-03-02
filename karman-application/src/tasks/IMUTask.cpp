@@ -67,6 +67,7 @@ bool init_imu_task(void)
 
 void *IMUTask(void *arg0)
 {
+    int task_iterations = 0;
     if(!init_imu_task())
         while(1);
 
@@ -90,7 +91,7 @@ void *IMUTask(void *arg0)
         currIMUData.Accel[1] = vector[1];
         currIMUData.Accel[2] = vector[2];
 
-        debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), vector.x(), vector.y(), vector.z());
+        //debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), vector.x(), vector.y(), vector.z());
 
         vector = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
 
@@ -105,8 +106,13 @@ void *IMUTask(void *arg0)
         currIMUData.Mag[2] = vector[2];
 
         // Transmit into queue for sensor task to aggregate
-        xQueueSend(gQueueIMUSensor, (void *) &currIMUData, (TickType_t) 0);
+        if(pdFALSE == xQueueSend(gQueueIMUSensor, (void *) &currIMUData, (TickType_t) 0))
+        {
+            debug_printf(const_cast<char *>("Failed to write into IMU to Sensor Task Queue\n"));
+        }
 
+        debug_printf(const_cast<char *>("IMUTASK %d\n"), task_iterations);
+        task_iterations++;
         // sleep until the next 20 milliseconds
         vTaskDelayUntil( &xLastWaketime, xFrequency );
     }

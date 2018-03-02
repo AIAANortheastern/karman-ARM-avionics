@@ -48,9 +48,9 @@ bool init_radio(void)
         ret = false;
     }
 
-    // TODO REMOVE THIS FOR REAL HARDWARE
-    char test[] = "Hello from radio uart\r\n";
-    UART_write(RadioUart, test, sizeof(test));
+  // TODO REMOVE THIS FOR REAL HARDWARE
+  //  char test[] = "Hello from radio uart\r\n";
+  //  UART_write(RadioUart, test, sizeof(test));
 
     return ret;
 }
