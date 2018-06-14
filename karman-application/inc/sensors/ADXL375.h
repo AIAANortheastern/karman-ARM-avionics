@@ -78,7 +78,9 @@ bool ADXL375_read_multiple_reg(uint8_t reg, uint8_t readLen);
 
 void ADXL375_reset(void);
 
-sensor_status_t ADXL375_get_data(void);
+sensor_status_t ADXL375_run(void);
+
+void ADXL375_get_data(ADXL375_data_t *out_data);
 
 void ADXL375_get_offset_values(void);
 

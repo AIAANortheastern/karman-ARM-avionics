@@ -143,6 +143,14 @@ void *sensor_task_func(void *arg0)
          *
          */
 
+        // Fix this to match the format above
+        curr_status = ADXL375_run();
+
+        if(curr_status == SENSOR_COMPLETE)
+        {
+            ADXL375_get_data(&(gCurrSensorValues.highGAccel));
+        }
+
         vTaskDelayUntil( &xLastWaketime, xFrequency );
     } /* infinite loop */
 

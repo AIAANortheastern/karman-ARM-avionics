@@ -14,6 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "debug_printf.h"
 #include "sensorDefs.h"
 #include "appDefs.h"
 #include "ADXL375.h"
@@ -46,15 +47,6 @@ void ADXL375_init(SPI_Handle *spi_master) {
 	
 	/* assign the spi_master to master struct for high g accelerometer */
 	gHighGAccelerometer.spi_master = spi_master;
-	
-	/* reset values to defaults */
-	memset((void *)gHighGAccelerometer.spi_send_buffer, 0, sizeof(gHighGAccelerometer.spi_send_buffer));
-	memset((void *)gHighGAccelerometer.spi_recv_buffer, 0, sizeof(gHighGAccelerometer.spi_recv_buffer));
-	gHighGAccelerometer.send_complete = false;
-
-	memset((void *)(&(gHighGAccelerometer).raw_vals), 0, sizeof(gHighGAccelerometer.raw_vals));
-	memset((void *)(&(gHighGAccelerometer).final_vals), 0, sizeof(gHighGAccelerometer.final_vals));
-	memset((void *)(&(gHighGAccelerometer).offset_vals), 0, sizeof(gHighGAccelerometer.offset_vals));
 	
 	/* call initialize functions to prepare accelerometer (probably set offsets and add self test) */
 
@@ -186,7 +178,7 @@ bool ADXL375_read_multiple_reg(uint8_t reg, uint8_t readLen) {
  * Eventually this will return successful and the data will be pulled out of the
  * appropriate global buffers.
  */
-sensor_status_t ADXL375_get_data() {
+sensor_status_t ADXL375_run() {
 
 	/** 
 	 *	1. Enqueue read request
@@ -210,12 +202,22 @@ sensor_status_t ADXL375_get_data() {
             xyz_read_helper();
             convert_helper();
 
+            debug_printf("x: %f, y: %f, z: %f\n", gHighGAccelerometer.final_vals.x, gHighGAccelerometer.final_vals.y, gHighGAccelerometer.final_vals.z );
+
             gHighGAccelerometer.get_data_state = ENQUEUE;
             return_status = SENSOR_COMPLETE;
 			break;
 	}
 	
 	return return_status;					   
+
+}
+
+void ADXL375_get_data(ADXL375_data_t *out_data){
+
+    out_data->x = gHighGAccelerometer.final_vals.x;
+    out_data->y = gHighGAccelerometer.final_vals.y;
+    out_data->z = gHighGAccelerometer.final_vals.z;
 
 }
 

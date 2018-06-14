@@ -34,6 +34,7 @@
 typedef struct
 {
     ms5607_02ba03_data_t altimeter; /**< Temp and pressure */
+    ADXL375_data_t highGAccel; /**< X, Y and Z High G Accelerometer Data */
     //bmx055_mag_data_t magnetometer; /**< Magnetometer data */
     //gyro_data_raw_t gyro; /**< Gyro data */
     /* TODO add all sensors' data */
