@@ -15,6 +15,7 @@
 #define SENSORDEFS_H_
 
 #include "ms5607-02ba03.h"
+#include "ADXL375.h"
 //#include "BMX055Mag.h"
 //#include "BMX005Gyro.h"
 #include "Board.h"
@@ -34,7 +35,7 @@
 typedef struct
 {
     ms5607_02ba03_data_t altimeter; /**< Temp and pressure */
-    ADXL375_data_t highGAccel; /**< X, Y and Z High G Accelerometer Data */
+    //ADXL375_data_t highGAccel; /**< X, Y and Z High G Accelerometer Data */
     //bmx055_mag_data_t magnetometer; /**< Magnetometer data */
     //gyro_data_raw_t gyro; /**< Gyro data */
     /* TODO add all sensors' data */

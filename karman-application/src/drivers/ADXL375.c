@@ -212,7 +212,7 @@ sensor_status_t ADXL375_run() {
 	return return_status;					   
 
 }
-
+/*
 void ADXL375_get_data(ADXL375_data_t *out_data){
 
     out_data->x = gHighGAccelerometer.final_vals.x;
@@ -220,7 +220,7 @@ void ADXL375_get_data(ADXL375_data_t *out_data){
     out_data->z = gHighGAccelerometer.final_vals.z;
 
 }
-
+*/
 /** 
  * @brief gets offset values from High G Accelerometer
  * 

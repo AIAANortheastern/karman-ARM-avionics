@@ -68,10 +68,10 @@ void *IMUTask(void *arg0)
         debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), euler.x(), euler.y(), euler.z());
 
         imu::Vector<3> acceleration = bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
-        debug_printf(const cast<char *>("X: %f Y: %f Z: %f"), acceleration.x(), acceleration.y(), acceleration.z())
+        debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), acceleration.x(), acceleration.y(), acceleration.z());
 
         /* Display calibration status for each sensor. */
-        uint8_t system, gyro, accel, mag = 0;
+        uint8_t system, gyro, accel , mag = 0;
         bno.getCalibration(&system, &gyro, &accel, &mag);
 
         debug_printf(const_cast<char *>("CALIBRATION: Sys=%d Gyro=%d Accel=%d Mag=%d"), system, gyro, accel, mag);
