@@ -4,16 +4,16 @@ ARM Development
 
 ### Code Composer Studio
 
-The project requires TI's Code Composer Stuido Version 7 (ccsv7). This is necessary for
+The project requires TI's Code Composer Stuido Version 8 (ccsv8). This is necessary for
 the cross-compiler as well as TI's SimpleLink SDK.
 
-* Download Code composer studio version 7.x [here](http://processors.wiki.ti.com/index.php/Download_CCS)
+* Download Code composer studio version 8.x [here](http://processors.wiki.ti.com/index.php/Download_CCS)
 * Ensure that Code Composer studio will be installed at ~/ti (or $HOME/ti or /home/<username>/ti) on linux, or C:/ti on Windows.
 * Click the checkbox for SimpleLink MSP432
 * Perform all  other installation steps per TI's wiki as linked above
 * On the "Getting Started" page, click the "Browse Examples" option to open the Resource Explorer. Alternatively, if the Resource Explorer is already open, navigate to that tab.
 * Open the tree on the left side of the Resource Explorer titled "Software"
-* Click the button that looks like a download button and download the MSP432 SDK v:1.60.00.12 "offline"
+* Click the button that looks like a download button and download the MSP432 SDK v:2.20.00.12 "offline"
 
 ### FreeRTOS
 
@@ -28,11 +28,11 @@ Steps to start working:
  
  * Clone the git repository to your favorite location
 
- * Download ccsv7 with MSP432 and CC13xx libraries
+ * Download ccsv8 with MSP432 and CC13xx libraries
  	* /home/user/ti
  	* c:\ti
  
- * Install MSP432 simplelink sdk v1.60.00.12 from resource explorer
+ * Install MSP432 simplelink sdk v2.20.00.12 from resource explorer
  
  * Install FreeRTOSv10.0.0
  	* /home/user/FreeRTOSv10.0.0
