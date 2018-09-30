@@ -31,7 +31,12 @@ SPI_Handle sensorSPIHandle;
 pthread_mutex_t sensorSPIMutex;
 
 
-static volatile uint32_t current_CS;
+/* Keeps track of the current chip select pin being used by the Sensor SPI Bus
+ *  value >= 0: Index of type MSP_EXP432P401R_GPIOName into gpioPinConfigs in src/board/MSP_EXP432P401R.c
+ *  value < 0: Unused, valid to make new sensor bus transaction
+ *  Must be initialized to -1 or we'll never be able to use the bus
+ */
+static volatile int32_t current_CS = -1;
 
 /* lets sensors know when their transaction has completed asyncronously */
 static void sensorSPICallbackFunction (SPI_Handle handle,
@@ -63,6 +68,7 @@ void init_sensor_task(void)
     }
 
     debug_printf("Sensor SPI Opened");
+    current_CS = -1; // init to "not busy"
 
     /* no pthread_mutexattr_t needed because we don't need a recursive mutex on the display */
     ret = pthread_mutex_init(&sensorSPIMutex, NULL);
@@ -149,23 +155,28 @@ void *sensor_task_func(void *arg0)
 
 /* @brief Transfer the sensor's transaction on the sensor bus
  *
+ *
  * @return True on success, false on failure
  */
-bool sensor_spi_transfer(SPI_Transaction *transaction, uint32_t cs_pin)
+bool sensor_spi_transfer(SPI_Transaction *transaction, int32_t cs_pin)
 {
     bool ret = false;
     int32_t mutexRet = EBUSY;
 
+    // Really, the only task that should ever ever use this transfer
+    // function is sensor task, but hey, could change.
+    // TODO if it turns out that we'll never call this from any other task,
+    // remove the mutex all together
     mutexRet = pthread_mutex_trylock(&sensorSPIMutex);
 
-    if(!mutexRet)
+    // Able to lock mutex, valid chip select, bus not busy
+    if(0 == mutexRet && cs_pin >= 0 && current_CS < 0)
     {
         current_CS = cs_pin;
 
         GPIO_write(current_CS, CHIP_SELECT_LOW);
 
-        ret = (int32_t)SPI_transfer(sensorSPIHandle, transaction);
-
+        ret = SPI_transfer(sensorSPIHandle, transaction);
 
         pthread_mutex_unlock(&sensorSPIMutex);
     }
@@ -181,5 +192,7 @@ static void sensorSPICallbackFunction (SPI_Handle handle,
         *(bool *)transaction->arg = true;
 
     GPIO_write(current_CS, CHIP_SELECT_HIGH);
+    /* reset chip select to "not busy" */
+    current_CS = -1;
 }
 

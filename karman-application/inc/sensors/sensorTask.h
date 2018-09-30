@@ -25,6 +25,6 @@ void *sensor_task_func(void* arg0);
 
 void init_sensor_task(void);
 
-bool sensor_spi_transfer(SPI_Transaction *transaction, uint32_t cs_pin);
+bool sensor_spi_transfer(SPI_Transaction *transaction, int32_t cs_pin);
 
 #endif /* SENSORTASK_H_ */
