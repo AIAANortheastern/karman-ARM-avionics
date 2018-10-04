@@ -59,3 +59,4 @@ doxygen*
 *.jxbrowser-data/*
 */.launches/*
 */.settings/*
+/.metadata/

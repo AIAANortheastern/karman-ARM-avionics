@@ -12,7 +12,7 @@
 #ifndef MS5607_02BA03_H_
 #define MS5607_02BA03_H_
 
-#include "SensorTask.h"
+#include "sensorTask.h"
 #include <ti/drivers/SPI.h>
 #include <time.h>
 
