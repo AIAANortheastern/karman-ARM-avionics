@@ -191,7 +191,8 @@ static void sensorSPICallbackFunction (SPI_Handle handle,
     if(transaction->arg)
         *(bool *)transaction->arg = true;
 
-    GPIO_write(current_CS, CHIP_SELECT_HIGH);
+    if(current_CS >= 0)
+        GPIO_write(current_CS, CHIP_SELECT_HIGH);
     /* reset chip select to "not busy" */
     current_CS = -1;
 }
