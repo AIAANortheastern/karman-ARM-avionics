@@ -117,7 +117,7 @@ void *sensor_task_func(void *arg0)
             /* Do fancy things with current temp/pressure data */
             ms5607_02ba03_get_data(&(gCurrSensorValues.altimeter));
 
-            debug_printf("Pressure %d", gCurrSensorValues.altimeter.pressure);
+            //debug_printf("Pressure %d", gCurrSensorValues.altimeter.pressure);
             debug_printf("Temp: %d", gCurrSensorValues.altimeter.temp);
         }
 #if 0

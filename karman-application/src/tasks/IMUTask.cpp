@@ -16,6 +16,8 @@
 
 #include <unistd.h>
 
+extern sensor_data_t gSensorData;
+
 I2C_Handle imuI2CHandle;
 Adafruit_BNO055 bno;
 
@@ -70,13 +72,27 @@ void *IMUTask(void *arg0)
         imu::Vector<3> magnet = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
         imu::Vector<3> gyros = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
 
-        debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), euler.x(), euler.y(), euler.z());
+        gSensorData.imuData.euler.x=euler.x();
+        gSensorData.imuData.euler.y=euler.y();
+        gSensorData.imuData.euler.z=euler.z();
+        gSensorData.imuData.accele.x=accele.x();
+        gSensorData.imuData.accele.y=accele.y();
+        gSensorData.imuData.accele.z=accele.z();
+        gSensorData.imuData.magnet.x=magnet.x();
+        gSensorData.imuData.magnet.y=magnet.y();
+        gSensorData.imuData.magnet.z=magnet.z();
+        gSensorData.imuData.gyros.x=gyros.x();
+        gSensorData.imuData.gyros.y=gyros.y();
+        gSensorData.imuData.gyros.z=gyros.z();
+
+
+        //debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), euler.x(), euler.y(), euler.z());
 
         /* Display calibration status for each sensor. */
         uint8_t system, gyro, accel, mag = 0;
         bno.getCalibration(&system, &gyro, &accel, &mag);
 
-        debug_printf(const_cast<char *>("CALIBRATION: Sys=%d Gyro=%d Accel=%d Mag=%d"), system, gyro, accel, mag);
+        //debug_printf(const_cast<char *>("CALIBRATION: Sys=%d Gyro=%d Accel=%d Mag=%d"), system, gyro, accel, mag);
 
         usleep(100000);
     }
