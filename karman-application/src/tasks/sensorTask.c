@@ -38,7 +38,7 @@ pthread_mutex_t sensorSPIMutex;
  */
 static volatile int32_t current_CS = -1;
 
-/* lets sensors know when their transaction has completed asyncronously */
+/* lets sensors know when their transaction has completed asynchronously */
 static void sensorSPICallbackFunction (SPI_Handle handle,
                                        SPI_Transaction *transaction);
 

@@ -57,6 +57,7 @@ void *IMUTask(void *arg0)
 
     for(;;)
     {
+        // create vectors to store data from Adafruit
         // Possible vector values can be:
         // - VECTOR_ACCELEROMETER - m/s^2
         // - VECTOR_MAGNETOMETER  - uT
@@ -65,6 +66,9 @@ void *IMUTask(void *arg0)
         // - VECTOR_LINEARACCEL   - m/s^2
         // - VECTOR_GRAVITY       - m/s^2
         imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+        imu::Vector<3> accele = bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
+        imu::Vector<3> magnet = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+        imu::Vector<3> gyros = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
 
         debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), euler.x(), euler.y(), euler.z());
 
