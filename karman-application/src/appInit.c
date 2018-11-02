@@ -93,6 +93,13 @@ void appInit(void)
         while(1);
     }
 
+    ret = pthread_mutex_init(&gSensorDataMutex, NULL);
+    if (ret != 0)
+    {
+        /* pthread_mutex_init() failed */
+        while(1);
+    }
+
     /** PIN CONFIGURATION **/
 
     /* Configure the LED pin */

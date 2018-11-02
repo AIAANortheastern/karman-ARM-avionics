@@ -19,7 +19,8 @@
 #include "appDefs.h"
 
 //global data struct
-sensor_data_t gSensorData;
+extern imu_sensor_data_t gSensorData;
+extern ms5607_02ba03_data_t altimeterData;
 
 /*
  *  ======== mainThread ========
@@ -38,11 +39,15 @@ void *mainThread(void *arg0)
         if(currtime.tv_nsec == 0)
         {
             pthread_mutex_lock(&gDisplayMuxtex);
-            Display_printf(gTheDisplay, 0, 0, "Euler data: x=%d, y=%d, z=%d", gSensorData.imuData.euler.x, gSensorData.imuData.euler.y, gSensorData.imuData.euler.z);
-            Display_printf(gTheDisplay, 0, 0, "Accelerometer data: x=%d, y=%d, z=%d", gSensorData.imuData.accele.x, gSensorData.imuData.accele.y, gSensorData.imuData.accele.z);
-            Display_printf(gTheDisplay, 0, 0, "Magnetometer data: x=%d, y=%d, z=%d", gSensorData.imuData.magnet.x, gSensorData.imuData.magnet.y, gSensorData.imuData.magnet.z);
-            Display_printf(gTheDisplay, 0, 0, "Gyroscope data: x=%d, y=%d, z=%d", gSensorData.imuData.gyros.x, gSensorData.imuData.gyros.y, gSensorData.imuData.gyros.z);
+            //pthread_mutex_lock(&gSensorDataMutex);
+            //Display_printf(gTheDisplay, 0, 0, "Euler data: x=%f, y=%f, z=%f", gSensorData.imuData.euler.x, gSensorData.imuData.euler.y, gSensorData.imuData.euler.z);
+            Display_printf(gTheDisplay, 0, 0, "Accelerometer data: x=%f, y=%f, z=%f", gSensorData.accele.x, gSensorData.accele.y, gSensorData.accele.z);
+            Display_printf(gTheDisplay, 0, 0, "Magnetometer data: x=%f, y=%f, z=%f", gSensorData.magnet.x, gSensorData.magnet.y, gSensorData.magnet.z);
+            Display_printf(gTheDisplay, 0, 0, "Gyroscope data: x=%f, y=%f, z=%f", gSensorData.gyros.x, gSensorData.gyros.y, gSensorData.gyros.z);
+            Display_printf(gTheDisplay, 0, 0, "Temperature data: %f", altimeterData.temp);
+            Display_printf(gTheDisplay, 0, 0, "Pressure data: %f", altimeterData.pressure);
             pthread_mutex_unlock(&gDisplayMuxtex);
+            //pthread_mutex_unlock(&gSensorDataMutex);
         }
         vTaskDelayUntil( &xLastWaketime, xFrequency );
     }

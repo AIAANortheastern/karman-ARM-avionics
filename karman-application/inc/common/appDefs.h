@@ -16,6 +16,7 @@
 
 extern Display_Handle gTheDisplay;
 extern pthread_mutex_t gDisplayMuxtex;
+extern pthread_mutex_t gSensorDataMutex;
 
 void appInit(void);
 

@@ -16,7 +16,8 @@
 
 #include <unistd.h>
 
-extern sensor_data_t gSensorData;
+extern imu_sensor_data_t gSensorData;
+//extern pthread_mutex_t gSensorDataMutex;
 
 I2C_Handle imuI2CHandle;
 Adafruit_BNO055 bno;
@@ -37,7 +38,7 @@ bool init_imu_task(void)
     if(imuI2CHandle)
     {
         bno.setBus(imuI2CHandle);
-        ret = bno.begin();
+        ret = bno.begin(Adafruit_BNO055::OPERATION_MODE_AMG);
         if(ret)
         {
             usleep(1000000);
@@ -67,26 +68,29 @@ void *IMUTask(void *arg0)
         // - VECTOR_EULER         - degrees
         // - VECTOR_LINEARACCEL   - m/s^2
         // - VECTOR_GRAVITY       - m/s^2
-        imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+        //imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
         imu::Vector<3> accele = bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
         imu::Vector<3> magnet = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
         imu::Vector<3> gyros = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
 
-        gSensorData.imuData.euler.x=euler.x();
-        gSensorData.imuData.euler.y=euler.y();
-        gSensorData.imuData.euler.z=euler.z();
-        gSensorData.imuData.accele.x=accele.x();
-        gSensorData.imuData.accele.y=accele.y();
-        gSensorData.imuData.accele.z=accele.z();
-        gSensorData.imuData.magnet.x=magnet.x();
-        gSensorData.imuData.magnet.y=magnet.y();
-        gSensorData.imuData.magnet.z=magnet.z();
-        gSensorData.imuData.gyros.x=gyros.x();
-        gSensorData.imuData.gyros.y=gyros.y();
-        gSensorData.imuData.gyros.z=gyros.z();
+        //pthread_mutex_lock(&gSensorDataMutex);
 
+        //gSensorData.imuData.euler.x=euler.x();
+        //gSensorData.imuData.euler.y=euler.y();
+        //gSensorData.imuData.euler.z=euler.z();
+        gSensorData.accele.x=accele.x();
+        gSensorData.accele.y=accele.y();
+        gSensorData.accele.z=accele.z();
+        gSensorData.magnet.x=magnet.x();
+        gSensorData.magnet.y=magnet.y();
+        gSensorData.magnet.z=magnet.z();
+        gSensorData.gyros.x=gyros.x();
+        gSensorData.gyros.y=gyros.y();
+        gSensorData.gyros.z=gyros.z();
 
-        //debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), euler.x(), euler.y(), euler.z());
+        //(&gSensorDataMutex);
+
+        //debug_printf(const_cast<char *>("X: %f Y: %f Z: %f"), accele.x(), accele.y(), accele.z());
 
         /* Display calibration status for each sensor. */
         uint8_t system, gyro, accel, mag = 0;

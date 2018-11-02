@@ -29,6 +29,8 @@ sensor_data_t gCurrSensorValues;
 
 SPI_Handle sensorSPIHandle;
 pthread_mutex_t sensorSPIMutex;
+//extern pthread_mutex_t gSensorDataMutex;
+extern ms5607_02ba03_data_t altimeterData;
 
 
 /* Keeps track of the current chip select pin being used by the Sensor SPI Bus
@@ -81,13 +83,6 @@ void init_sensor_task(void)
     /* run initialization for all sensors */
     /* altimeter/pressure */
     ms5607_02ba03_init(&sensorSPIHandle);
-#if 0
-    /* magnetometer */
-    bmx055_mag_init(&sensorSPIHandle);
-
-    /* gyro */
-    bmx500Gyro_init(&sensorSPIHandle);
-#endif
 }
 
 /**
@@ -117,8 +112,10 @@ void *sensor_task_func(void *arg0)
             /* Do fancy things with current temp/pressure data */
             ms5607_02ba03_get_data(&(gCurrSensorValues.altimeter));
 
+            altimeterData.pressure=gCurrSensorValues.altimeter.pressure;
+            altimeterData.temp=gCurrSensorValues.altimeter.temp;
             //debug_printf("Pressure %d", gCurrSensorValues.altimeter.pressure);
-            debug_printf("Temp: %d", gCurrSensorValues.altimeter.temp);
+            //debug_printf("Temp: %d", gCurrSensorValues.altimeter.temp);
         }
 #if 0
         /* make this fit the new template scheme */

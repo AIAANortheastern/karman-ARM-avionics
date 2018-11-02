@@ -41,8 +41,8 @@ typedef struct altimeter_raw_s
 /** Final computed data */
 typedef struct altimeter_data_s
 {
-    int32_t temp;           /**< Temperature in the form YY.XX deg c */
-    int32_t pressure;       /**< Pressure in the form YYYYYY.XX millibar (bizzare right?) */
+    float temp;           /**< Temperature in the form YY.XX deg c */
+    float pressure;       /**< Pressure in the form YYYYYY.XX millibar (bizzare right?) */
 } ms5607_02ba03_data_t;
 
 /** State machine for altimeter */

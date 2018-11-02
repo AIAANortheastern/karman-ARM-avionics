@@ -35,9 +35,9 @@ extern pthread_mutex_t sensorSPIMutex;
 
 typedef struct
 {
-    int32_t x;
-    int32_t y;
-    int32_t z;
+    float x;
+    float y;
+    float z;
 }c_vector;
 
 typedef struct
@@ -57,5 +57,8 @@ typedef struct
     //gyro_data_raw_t gyro; /**< Gyro data */
     /* TODO add all sensors' data */
 } sensor_data_t;
+
+imu_sensor_data_t gSensorData;
+ms5607_02ba03_data_t altimeterData;
 
 #endif /* SENSORDEFS_H_ */
